@@ -33,7 +33,7 @@ def download_file(url: str, fname: str, chunk_size=1024):
 
 
 def download_extract_zip(url: str, file_path: str):
-    import wget
+    #import wget
     import zipfile
     root = os.path.dirname(file_path)
     # wget.download(url, out=file_path, bar=download_progress)
