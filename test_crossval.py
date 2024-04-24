@@ -61,7 +61,8 @@ if __name__ == "__main__":
     for test_fold in config.test_folds:
         experiment = os.path.join(experiment_root, f'{test_fold}')
 
-        test_loader = torch.utils.data.DataLoader(ESC50(subset="test", test_folds={test_fold}, root=data_path),
+        test_loader = torch.utils.data.DataLoader(ESC50(subset="test", test_folds={test_fold},
+                                                        root=data_path, download=True),
                                                   batch_size=config.batch_size,
                                                   shuffle=False,
                                                   num_workers=0,  # config.num_workers,
