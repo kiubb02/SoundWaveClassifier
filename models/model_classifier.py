@@ -9,7 +9,7 @@ class ResNet(nn.Module):
         self.inplanes = 64
         ## my code:
         self.conv1 = nn.Sequential(
-            nn.Conv2d(2, 64, kernel_size=6, stride=1, padding=0),
+            nn.Conv2d(1, 64, kernel_size=6, stride=1, padding=0),
             nn.ReLU(),
             nn.BatchNorm2d(64)
         )
