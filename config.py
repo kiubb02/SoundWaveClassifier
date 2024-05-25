@@ -11,7 +11,7 @@ test_folds = [1, 2, 3, 4, 5]
 # ratio to split off from training data
 val_size = .2  # could be changed
 
-model_constructor = "ResNet(block=BasicBlock, layers=[2, 2, 2, 2], num_classes=n_classes, dropout_prob=0.25)"
+model_constructor = "ResNet(block=BasicBlock, layers=[2, 2, 2, 2], num_classes=config.n_classes, dropout_prob=0.25)"
 # model_constructor = "ResNet(block=ResidualBlock, layers=[2, 2, 2, 2], num_classes=config.n_classes)"
 # model_constructor = "ResNet(block=ResidualBlock, layers=[3, 4, 6, 3], num_classes=config.n_classes)"
 
