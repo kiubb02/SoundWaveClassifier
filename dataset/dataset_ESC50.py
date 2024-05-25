@@ -91,22 +91,23 @@ class ESC50(data.Dataset):
         if train:
             # augment training data with transformations that include randomness
             # transforms can be applied on wave and spectral representation
-            #self.wave_transforms = transforms.Compose(
-            #    torch.Tensor,
+            self.wave_transforms = transforms.Compose(
+               torch.Tensor,
             #    #transforms.RandomScale(max_scale=1.25),
-            #    transforms.RandomPadding(out_len=220500),
-            #    transforms.RandomCrop(out_len=220500)
-            #)
+                transforms.RandomPadding(out_len=220500),
+                transforms.RandomCrop(out_len=220500)
+            )
 
 
             #### my changes
-            self.wave_transforms = transforms.Compose(
-                transforms.AddNoise(),
-                transforms.PitchShifting(),
-                transforms.RandomShift(),
-                transforms.VolumeScaling(),
-                transforms.TimeStretching()
-            )
+            #self.wave_transforms = transforms.Compose(
+            #    torch.Tensor,
+            #    transforms.AddNoise(),
+            #    transforms.PitchShifting(),
+             #   transforms.RandomShift(),
+            #    transforms.VolumeScaling(),
+            #    transforms.TimeStretching()
+            #)
 
 
             self.spec_transforms = transforms.Compose(
@@ -158,6 +159,7 @@ class ESC50(data.Dataset):
 
         wave_copy = np.copy(wave)
         wave_copy = self.wave_transforms(wave_copy)
+        # wave_copy.squeeze(0)
         wave_copy.squeeze_(0)
 
         s = librosa.feature.melspectrogram(y=wave_copy.numpy(),

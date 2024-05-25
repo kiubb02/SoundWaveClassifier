@@ -5,42 +5,13 @@ import random
 
 ### My Trasnformers
 #########################################
-
-class AddNoise:
-    def __init__(self, mean=0.0, std=0.1):
-        self.mean = mean
-        self.std = std
+class TimeStretching:
+    def __init__(self, rate=1.5):
+        self.rate = rate
 
     def __call__(self, data):
-        noise = np.random.normal(self.mean, self.std, len(data))
-        audio_noisy = data + noise
-        return audio_noisy
-
-
-class PitchShifting:
-    def __init__(self, sr=16000, bins_per_octave=12, pitch_pm=2):
-        self.sr = sr
-        self.bins_per_octave = bins_per_octave
-        self.pitch_pm = pitch_pm
-
-    def __call__(self, data):
-        pitch_change = self.pitch_pm * 2 * (np.random.uniform() - 0.5)
-        data_shifted = librosa.effects.pitch_shift(data.astype('float64'), n_steps=pitch_change, sr=self.sr, bins_per_octave=self.bins_per_octave)
-        return data_shifted
-
-
-class RandomShift:
-    def __init__(self, shift_max=0.2):
-        self.shift_max = shift_max
-
-    def __call__(self, data):
-        timeshift_fac = self.shift_max * 2 * (np.random.uniform() - 0.5)
-        start = int(data.shape[0] * timeshift_fac)
-        if start > 0:
-            data = np.pad(data, (start, 0), mode='constant')[0:data.shape[0]]
-        else:
-            data = np.pad(data, (0, -start), mode='constant')[0:data.shape[0]]
-        return data
+        stretching = librosa.effects.time_stretch(data.numpy(), rate=self.rate)
+        return torch.tensor(stretching)
 
 
 class VolumeScaling:
@@ -53,32 +24,42 @@ class VolumeScaling:
         data = data * dyn_change
         return data
 
-import librosa
 
-class TimeStretching:
-    def __init__(self, rate=1.5):
-        self.rate = rate
+class RandomShift:
+    def __init__(self, shift_max=0.2):
+        self.shift_max = shift_max
 
     def __call__(self, data):
-        stretching = librosa.effects.time_stretch(data, rate=self.rate)
-        return stretching
+        timeshift_fac = self.shift_max * 2 * (torch.rand(1) - 0.5)
+        start = int(data.shape[0] * timeshift_fac)
+        if start > 0:
+            data = torch.cat((data[start:], torch.zeros(start)))
+        else:
+            data = torch.cat((torch.zeros(-start), data[:start]))
+        return data
 
 
+class PitchShifting:
+    def __init__(self, sr=16000, bins_per_octave=12, pitch_pm=2):
+        self.sr = sr
+        self.bins_per_octave = bins_per_octave
+        self.pitch_pm = pitch_pm
 
-# class TimeStretching:
-#     def __init__(self, rate=1.5):
-#         self.rate = rate
-#
-#     def __call__(self, data):
-#         input_length = len(data)
-#         stretching = librosa.effects.time_stretch(data, self.rate)
-#
-#         if len(stretching) > input_length:
-#             stretching = stretching[:input_length]
-#         else:
-#             stretching = np.pad(stretching, (0, max(0, input_length - len(stretching))), "constant")
-#         return stretching
+    def __call__(self, data):
+        pitch_change = self.pitch_pm * 2 * (torch.rand(1) - 0.5)
+        data_shifted = librosa.effects.pitch_shift(data.numpy(), sr=self.sr, n_steps=pitch_change, bins_per_octave=self.bins_per_octave)
+        return torch.tensor(data_shifted)
 
+
+class AddNoise:
+    def __init__(self, mean=0.0, std=0.1):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, data):
+        noise = torch.normal(self.mean, self.std, size=data.shape)
+        audio_noisy = data.numpy() + noise.numpy()
+        return torch.from_numpy(audio_noisy)
 
 #########################################
 
