@@ -25,8 +25,8 @@ class PitchShifting:
 
     def __call__(self, data):
         pitch_change = self.pitch_pm * 2 * (np.random.uniform() - 0.5)
-        data = librosa.effects.pitch_shift(data.astype('float64'), self.sr, n_steps=pitch_change, bins_per_octave=self.bins_per_octave)
-        return data
+        data_shifted = librosa.effects.pitch_shift(data.astype('float64'), n_steps=pitch_change, sr=self.sr, bins_per_octave=self.bins_per_octave)
+        return data_shifted
 
 
 class RandomShift:
@@ -53,20 +53,31 @@ class VolumeScaling:
         data = data * dyn_change
         return data
 
+import librosa
 
 class TimeStretching:
     def __init__(self, rate=1.5):
         self.rate = rate
 
     def __call__(self, data):
-        input_length = len(data)
-        stretching = librosa.effects.time_stretch(data, self.rate)
-
-        if len(stretching) > input_length:
-            stretching = stretching[:input_length]
-        else:
-            stretching = np.pad(stretching, (0, max(0, input_length - len(stretching))), "constant")
+        stretching = librosa.effects.time_stretch(data, rate=self.rate)
         return stretching
+
+
+
+# class TimeStretching:
+#     def __init__(self, rate=1.5):
+#         self.rate = rate
+#
+#     def __call__(self, data):
+#         input_length = len(data)
+#         stretching = librosa.effects.time_stretch(data, self.rate)
+#
+#         if len(stretching) > input_length:
+#             stretching = stretching[:input_length]
+#         else:
+#             stretching = np.pad(stretching, (0, max(0, input_length - len(stretching))), "constant")
+#         return stretching
 
 
 #########################################
