@@ -3,6 +3,65 @@ import torch
 import librosa
 import random
 
+### My Trasnformers
+#########################################
+class TimeStretching:
+    def __init__(self, rate=1.5):
+        self.rate = rate
+
+    def __call__(self, data):
+        stretching = librosa.effects.time_stretch(data.numpy(), rate=self.rate)
+        return torch.tensor(stretching)
+
+
+class VolumeScaling:
+    def __init__(self, low=1.5, high=2.5):
+        self.low = low
+        self.high = high
+
+    def __call__(self, data):
+        dyn_change = np.random.uniform(low=self.low, high=self.high)
+        data = data * dyn_change
+        return data
+
+
+class RandomShift:
+    def __init__(self, shift_max=0.2):
+        self.shift_max = shift_max
+
+    def __call__(self, data):
+        timeshift_fac = self.shift_max * 2 * (torch.rand(1) - 0.5)
+        start = int(data.shape[0] * timeshift_fac)
+        if start > 0:
+            data = torch.cat((data[start:], torch.zeros(start)))
+        else:
+            data = torch.cat((torch.zeros(-start), data[:start]))
+        return data
+
+
+class PitchShifting:
+    def __init__(self, sr=16000, bins_per_octave=12, pitch_pm=2):
+        self.sr = sr
+        self.bins_per_octave = bins_per_octave
+        self.pitch_pm = pitch_pm
+
+    def __call__(self, data):
+        pitch_change = self.pitch_pm * 2 * (torch.rand(1) - 0.5)
+        data_shifted = librosa.effects.pitch_shift(data.numpy(), sr=self.sr, n_steps=pitch_change, bins_per_octave=self.bins_per_octave)
+        return torch.tensor(data_shifted)
+
+
+class AddNoise:
+    def __init__(self, mean=0.0, std=0.1):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, data):
+        noise = torch.normal(self.mean, self.std, size=data.shape)
+        audio_noisy = data.numpy() + noise.numpy()
+        return torch.from_numpy(audio_noisy)
+
+#########################################
 
 # Composes several transforms together.
 class Compose:
