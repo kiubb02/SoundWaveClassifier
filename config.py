@@ -16,10 +16,12 @@ model_constructor = "ResNet(block=ResidualBlock, layers=[2, 2, 2, 2], num_classe
 # model_constructor = "ResNet(block=ResidualBlock, layers=[3, 4, 6, 3], num_classes=config.n_classes)"
 
 # model checkpoints loaded for testing
-test_checkpoints = ['terminal.pt']  # ['terminal.pt', 'best_val_loss.pt']
+# test_checkpoints = ['terminal.pt']
+test_checkpoints = ['terminal.pt', 'best_val_loss.pt']
 # experiment folder used for testing (result from cross validation training)
 #test_experiment = 'results/2024-04-01-00-00'
-test_experiment = 'results/sample-run'
+#test_experiment = 'results/sample-run'
+test_experiment = 'results/2024-05-26-20-52'
 
 # sampling rate for waves
 sr = 44100
@@ -30,8 +32,8 @@ num_workers = 6#16
 persistent_workers = True
 epochs = 200
 patience = 20
-lr = 1e-3
-weight_decay = 1e-3
+lr = 6e-3
+weight_decay = 4e-3
 warm_epochs = 10
-gamma = 0.8
+gamma = 0.9
 step_size = 5

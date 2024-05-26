@@ -18,6 +18,8 @@ class ResNet(nn.Module):
         self.layer3 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(512, num_classes)
+        # drop out
+        self.dropout = nn.Dropout(0.3)  # Added dropout layer with dropout probability of 0.5
 
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None
@@ -44,6 +46,9 @@ class ResNet(nn.Module):
 
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
+
+        x = self.dropout(x)
+
         x = self.fc(x)
 
         return x

@@ -95,7 +95,7 @@ class ESC50(data.Dataset):
                 torch.Tensor,
                 #transforms.RandomScale(max_scale=1.25),
                 transforms.RandomPadding(out_len=220500),
-                transforms.RandomCrop(out_len=220500)
+                transforms.RandomCrop(out_len=220500),
             )
 
             self.spec_transforms = transforms.Compose(
@@ -104,7 +104,17 @@ class ESC50(data.Dataset):
                 # lambda non-pickleable, problem on windows, replace with partial function
                 torch.Tensor,
                 partial(torch.unsqueeze, dim=0),
+                transforms.FrequencyMask(max_width=12,numbers = 2),
+                transforms.TimeMask(max_width=10,numbers = 2)
             )
+
+            # self.spec_transforms = transforms.Compose(
+            #    # to Tensor and prepend singleton dim
+            #    #lambda x: torch.Tensor(x).unsqueeze(0),
+            #    # lambda non-pickleable, problem on windows, replace with partial function
+            #    torch.Tensor,
+            #    partial(torch.unsqueeze, dim=0),
+            #)
 
         else:
             # for testing transforms are applied deterministically to support reproducible scores
